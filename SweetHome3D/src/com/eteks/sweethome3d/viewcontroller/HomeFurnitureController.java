@@ -355,15 +355,16 @@ public class HomeFurnitureController implements Controller {
 
       boolean basePlanItemEnabled = !firstPiece.isDoorOrWindow();
       for (int i = 1; !basePlanItemEnabled && i < selectedFurniture.size(); i++) {
-        if (!selectedFurniture.get(i).isDoorOrWindow()) {
-          basePlanItemEnabled = true;
-        }
+          if (!selectedFurniture.get(i).isDoorOrWindow()) {
+              basePlanItemEnabled = true;
+              break;
+          }
       }
       this.basePlanItemEnabled = basePlanItemEnabled;
 
       Boolean basePlanItem = !firstPiece.isMovable();
       for (int i = 1; i < selectedFurniture.size(); i++) {
-        if (basePlanItem.booleanValue() != !selectedFurniture.get(i).isMovable()) {
+        if (basePlanItem.booleanValue() == selectedFurniture.get(i).isMovable()) {
           basePlanItem = null;
           break;
         }
@@ -520,9 +521,10 @@ public class HomeFurnitureController implements Controller {
 
       boolean lightPowerEditable = firstPiece instanceof HomeLight;
       for (int i = 1; lightPowerEditable && i < selectedFurniture.size(); i++) {
-        if (!(selectedFurniture.get(i) instanceof HomeLight)) {
-          lightPowerEditable = false;
-        }
+          if (!(selectedFurniture.get(i) instanceof HomeLight)) {
+              lightPowerEditable = false;
+              break;
+          }
       }
       this.lightPowerEditable = lightPowerEditable;
 
@@ -591,17 +593,17 @@ public class HomeFurnitureController implements Controller {
    * Returns <code>true</code> if the given <code>property</code> is editable.
    * Depending on whether a property is editable or not, the view associated to this controller
    * may render it differently.
-   * The implementation of this method always returns <code>true</code> except for <code>DESCRIPTION</code> and <code>PRICE</code> properties. 
+   * The implementation of this method always returns <code>false</code> for <code>PRICE</code> properties.
    */
   public boolean isPropertyEditable(Property property) {
     switch (property) {
-      case DESCRIPTION :
       case PRICE :
         return false;
       case LIGHT_POWER :
         return isLightPowerEditable();
       case VISIBLE :
         return this.visibleEditable;
+      case DESCRIPTION :
       default :
         return true;
     }
@@ -813,6 +815,7 @@ public class HomeFurnitureController implements Controller {
    * Returns <code>true</code> if base plan item is an enabled property.
    * @deprecated the method is wrongly named and should be replaced by <code>isBasePlanItemEnabled</code>.
    */
+  @Deprecated
   public boolean isBasePlanItemEditable() {
     return this.basePlanItemEnabled;
   }
@@ -1555,7 +1558,7 @@ public class HomeFurnitureController implements Controller {
     
     public ModifiedFurnitureGroup(HomeFurnitureGroup group) {
       super(group);
-      List<HomePieceOfFurniture> groupFurniture = getGroupFurniture((HomeFurnitureGroup)group);
+      List<HomePieceOfFurniture> groupFurniture = getGroupFurniture(group);
       this.groupFurnitureX = new float [groupFurniture.size()];
       this.groupFurnitureY = new float [groupFurniture.size()];
       this.groupFurnitureWidth = new float [groupFurniture.size()];
