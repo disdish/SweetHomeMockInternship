@@ -2002,12 +2002,49 @@ public class PlanComponent extends JComponent implements PlanView, Scrollable, P
     }
     return strokeWidth;
   }
-  
+
   /**
-   * Prints this component plan at the scale given in the home print attributes or at a scale 
-   * that makes it fill <code>pageFormat</code> imageable size if this attribute is <code>null</code>.
+   * Returns an arrayList of all the possible levels that are viewable so those levels can be displayed in the
+   * printing process, is a helper function.
+   */
+  private List<Level> viewableLevels() {
+    List<Level> viewable = new ArrayList<>();
+    for (Level level: this.home.getLevels()) {
+      if (level.isViewable()){
+        viewable.add(level);
+      }
+    }
+      return viewable;
+  }
+
+  /**
+   * Returns page exists or does not after drawing the page from the help of the helper methods viewableLevels
+   * and printLevel method (was previously print). It prints one page per viewable level and the selected level is
+   * restored afterward.
    */
   public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
+    if (this.home.getLevels().isEmpty()) {
+      return printLevel(g, pageFormat, pageIndex);
+    }
+    List<Level> viewables = this.viewableLevels();
+    if (pageIndex >= viewables.size()) {
+      return NO_SUCH_PAGE;
+    }
+    Level selected = this.home.getSelectedLevel();
+    try {
+      this.home.setSelectedLevel(viewables.get(pageIndex));
+      return (printLevel(g, pageFormat, 0));
+    }
+    finally {
+      this.home.setSelectedLevel(selected);
+    }
+  }
+
+  /**
+   * HELPER FUNCTION NOW: Prints this component plan at the scale given in the home print attributes or at a scale
+   * that makes it fill <code>pageFormat</code> imageable size if this attribute is <code>null</code>.
+   */
+  private int printLevel(Graphics g, PageFormat pageFormat, int pageIndex) {
     List<Selectable> printedItems = getPaintedItems(); 
     Rectangle2D printedItemBounds = getItemsBounds(g, printedItems);
     if (printedItemBounds != null) {
