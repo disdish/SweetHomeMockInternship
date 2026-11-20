@@ -2018,29 +2018,6 @@ public class PlanComponent extends JComponent implements PlanView, Scrollable, P
   }
 
   /**
-   * Returns page exists or does not after drawing the page from the help of the helper methods viewableLevels
-   * and printLevel method (was previously print). It prints one page per viewable level and the selected level is
-   * restored afterward.
-   */
-  public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
-    if (this.home.getLevels().isEmpty()) {
-      return printLevel(g, pageFormat, pageIndex);
-    }
-    List<Level> viewables = this.viewableLevels();
-    if (pageIndex >= viewables.size()) {
-      return NO_SUCH_PAGE;
-    }
-    Level selected = this.home.getSelectedLevel();
-    try {
-      this.home.setSelectedLevel(viewables.get(pageIndex));
-      return (printLevel(g, pageFormat, 0));
-    }
-    finally {
-      this.home.setSelectedLevel(selected);
-    }
-  }
-
-  /**
    * HELPER FUNCTION NOW: Prints this component plan at the scale given in the home print attributes or at a scale
    * that makes it fill <code>pageFormat</code> imageable size if this attribute is <code>null</code>.
    */
@@ -2111,7 +2088,30 @@ public class PlanComponent extends JComponent implements PlanView, Scrollable, P
       return NO_SUCH_PAGE;
     }
   }
-  
+
+  /**
+   * Returns page exists or does not after drawing the page from the help of the helper methods viewableLevels
+   * and printLevel method (was previously print). It prints one page per viewable level and the selected level is
+   * restored afterward.
+   */
+  public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
+    if (this.home.getLevels().isEmpty()) {
+      return printLevel(g, pageFormat, pageIndex);
+    }
+    List<Level> viewables = this.viewableLevels();
+    if (pageIndex >= viewables.size()) {
+      return NO_SUCH_PAGE;
+    }
+    Level selected = this.home.getSelectedLevel();
+    try {
+      this.home.setSelectedLevel(viewables.get(pageIndex));
+      return (printLevel(g, pageFormat, 0));
+    }
+    finally {
+      this.home.setSelectedLevel(selected);
+    }
+  }
+
   /**
    * Returns an image of the selected items displayed by this component 
    * (camera excepted) with no outline at scale 1/1 (1 pixel = 1cm).
