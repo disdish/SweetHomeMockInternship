@@ -750,8 +750,11 @@ public class FurnitureTable extends JTable implements View, Printable {
           return headerRendererLabel;
         }
       };
-    for (int columnIndex = 0, n = columnModel.getColumnCount(); columnIndex < n; columnIndex++) {
+      List<Object> identify = new ArrayList<>();
+      for (int columnIndex = 0, n = columnModel.getColumnCount(); columnIndex < n; columnIndex++) {
       final TableColumn tableColumn = columnModel.getColumn(columnIndex);
+      // Add all the columns identifiers into the identify list
+      identify.add(tableColumn.getIdentifier());
       // Create a printable column from existing table column
       TableColumn printableColumn = new TableColumn();
       printableColumn.setIdentifier(tableColumn.getIdentifier());
@@ -778,7 +781,18 @@ public class FurnitureTable extends JTable implements View, Printable {
       // Change printable column header renderer
       printableColumn.setHeaderRenderer(printableHeaderRenderer);
       printableColumnModel.addColumn(printableColumn);
-    }    
+    }
+      // Makes a printable column with the header and all the logistics
+    if (!identify.contains(HomePieceOfFurniture.SortableProperty.LEVEL)) {
+      TableColumn levelColumn = ((FurnitureTableColumnModel)columnModel).availableColumns.
+              get(HomePieceOfFurniture.SortableProperty.LEVEL);
+      TableColumn printableLevel = new TableColumn();
+      printableLevel.setIdentifier(levelColumn.getIdentifier());
+      printableLevel.setHeaderValue(levelColumn.getHeaderValue());
+      printableLevel.setCellRenderer(levelColumn.getCellRenderer());
+      printableLevel.setHeaderRenderer(printableHeaderRenderer);
+      printableColumnModel.addColumn(printableLevel);
+    }
     return print(g, pageFormat, pageIndex, printableColumnModel, Color.BLACK);
   }
 
